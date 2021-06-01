@@ -1,16 +1,16 @@
 // @TODO: YOUR CODE HERE!
-var svgWidth = 960;
-var svgHeight = 500;
+var svgWidth = 800;
+var svgHeight = 600;
 
-var margin = {
-  top: 20,
+var margins = {
+  top: 30,
   right: 40,
-  bottom: 60,
-  left: 100
+  bottom: 50,
+  left: 80
 };
 
-var width = svgWidth - margin.left - margin.right;
-var height = svgHeight - margin.top - margin.bottom;
+var width = svgWidth - margins.left - margins.right;
+var height = svgHeight - margins.top - margins.bottom;
 
 // Create an SVG wrapper, append an SVG group that will hold our chart, and shift the latter by left and top margins.
 var svg = d3.select("#scatter")
@@ -19,26 +19,30 @@ var svg = d3.select("#scatter")
   .attr("height", svgHeight);
 
 var chartGroup = svg.append("g")
-  .attr("transform", `translate(${margin.left}, ${margin.top})`);
+  .attr("transform", `translate(${margins.left}, ${margins.top})`);
 
 // Import Data
 d3.csv("../assets/data/data.csv")
-  .then(function(healthdata) {
+  .then(function(health_data) {
 
     // Managing Data
-    healthdata.forEach(function(data) {
+    health_data.forEach(function(data) {
       data.poverty = +data.poverty;
       data.healthcare = +data.healthcare;
     });
 
     // Scale functions
     var xLinearScale = d3.scaleLinear()
-      .domain([8, d3.max(healthdata, d => d.poverty*1.2)])
+      .domain([8, d3.max(health_data, d => d.poverty*1.2)])
       .range([0, width]);
 
     var yLinearScale = d3.scaleLinear()
-      .domain([2, d3.max(healthdata, d => d.healthcare*1.2)])
+      .domain([2, d3.max(health_data, d => d.healthcare*1.2)])
       .range([height, 0]);
+
+	// Dinamic size
+
+
 
     // Axis functions
     var bottomAxis = d3.axisBottom(xLinearScale);
@@ -53,7 +57,7 @@ d3.csv("../assets/data/data.csv")
       .call(leftAxis);
 
     // Create Circles
-    var circlesGroup = chartGroup.selectAll("circle").data(healthdata).enter();
+    var circlesGroup = chartGroup.selectAll("circle").data(health_data).enter();
   
     circlesGroup.append("circle")
     .attr("cx", d => xLinearScale(d.poverty))
@@ -73,7 +77,7 @@ d3.csv("../assets/data/data.csv")
      .attr("class","stateText")
      .on("mouseover", function(data, index) {
        toolTip.show(data);
-     d3.select(this).style("stroke","#323232")
+     d3.select(this).style("stroke","#464646")
      })
      .on("mouseout", function(data, index) {
          toolTip.hide(data)
@@ -83,7 +87,7 @@ d3.csv("../assets/data/data.csv")
     // Init tool tip
     var toolTip = d3.tip()
       .attr("class", "d3-tip")
-      .offset([80, -60])
+      .offset([100, -80])
       .html(function(d) {
         return (`${d.state}<br>poverty: ${d.poverty}<br>healthcare: ${d.healthcare}`);
       });
@@ -96,14 +100,14 @@ d3.csv("../assets/data/data.csv")
     // Axes Names
     chartGroup.append("text")
       .attr("transform", "rotate(-90)")
-      .attr("y", 0 - margin.left + 40)
+      .attr("y", 0 - margins.left + 30)
       .attr("x", 0 - (height / 2))
       .attr("dy", "1em")
       .attr("class", "axisText")
       .text("Lacks Health Care(%)");
 
     chartGroup.append("text")
-      .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
+      .attr("transform", `translate(${width / 2}, ${height + margins.top + 10})`)
       .attr("class", "axisText")
       .text("Poverty (%)");
   });
